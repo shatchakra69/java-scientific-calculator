@@ -110,6 +110,11 @@ public class CalculatorEngine {
         return Collections.unmodifiableList(history);
     }
 
+    /** Remove a single record from the history (no-op if absent). */
+    public void removeHistory(CalculationRecord record) {
+        history.remove(record);
+    }
+
     public void clearHistory() {
         history.clear();
     }

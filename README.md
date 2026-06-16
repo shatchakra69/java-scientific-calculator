@@ -33,7 +33,7 @@ The goal was something simple to use but solid underneath.
 
 ```bash
 ./run.sh     # compiles and launches the calculator
-./test.sh    # runs the test suite (75 checks, no GUI)
+./test.sh    # runs the test suite (79 checks, no GUI)
 ```
 
 ## Author

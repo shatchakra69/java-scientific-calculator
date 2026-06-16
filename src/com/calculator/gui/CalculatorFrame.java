@@ -1,5 +1,6 @@
 package com.calculator.gui;
 
+import com.calculator.core.CalculationRecord;
 import com.calculator.core.CalculatorEngine;
 import com.calculator.exceptions.CalculatorException;
 import com.calculator.operations.AngleMode;
@@ -15,6 +16,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 
 /**
@@ -36,26 +40,35 @@ public class CalculatorFrame extends JFrame implements CalculatorActions {
     private final MemoryPanel memory = new MemoryPanel(this);
     private final HistoryPanel history = new HistoryPanel(this);
 
+    private final JPanel content = new JPanel(new BorderLayout());
+    private final AnimatedButton historyToggle =
+            new AnimatedButton("History", new Color(0xEC, 0xEF, 0xF1), Color.BLACK);
+    private boolean historyVisible = false;
+
     public CalculatorFrame() {
         super("Scientific Calculator");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(Color.WHITE);
+        header.add(buildToolbar(), BorderLayout.NORTH);
+        header.add(display, BorderLayout.CENTER);
+
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Color.WHITE);
-        top.add(display, BorderLayout.NORTH);
+        top.add(header, BorderLayout.NORTH);
         top.add(memory, BorderLayout.SOUTH);
 
         JPanel left = new JPanel(new BorderLayout());
         left.setBackground(Color.WHITE);
         left.add(top, BorderLayout.NORTH);
         left.add(buttons, BorderLayout.CENTER);
-        left.setPreferredSize(new java.awt.Dimension(340, 440));
+        left.setPreferredSize(new Dimension(340, 440));
 
-        JPanel content = new JPanel(new BorderLayout());
         content.setBackground(Color.WHITE);
         content.setBorder(BorderFactory.createEmptyBorder());
         content.add(left, BorderLayout.CENTER);
-        content.add(history, BorderLayout.EAST);
+        // History starts hidden — it appears when the History button is clicked.
         setContentPane(content);
 
         wireKeyboard();
@@ -65,6 +78,34 @@ public class CalculatorFrame extends JFrame implements CalculatorActions {
         setResizable(false);
         pack();
         setLocationRelativeTo(null);
+    }
+
+    /** Top toolbar holding the show/hide History toggle. */
+    private JPanel buildToolbar() {
+        JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        bar.setBackground(Color.WHITE);
+        bar.setBorder(BorderFactory.createEmptyBorder(8, 12, 0, 12));
+        historyToggle.setFont(new Font("SansSerif", Font.BOLD, 13));
+        historyToggle.setPreferredSize(new Dimension(120, 28));
+        historyToggle.addActionListener(e -> toggleHistory());
+        bar.add(historyToggle);
+        return bar;
+    }
+
+    /** Show or hide the history panel, resizing the window to fit. */
+    private void toggleHistory() {
+        historyVisible = !historyVisible;
+        if (historyVisible) {
+            content.add(history, BorderLayout.EAST);
+            history.refresh(engine.getHistory());
+            historyToggle.setText("Hide History");
+        } else {
+            content.remove(history);
+            historyToggle.setText("History");
+        }
+        content.revalidate();
+        content.repaint();
+        pack();
     }
 
     /** Give the expression field focus so the keyboard works immediately. */
@@ -182,6 +223,12 @@ public class CalculatorFrame extends JFrame implements CalculatorActions {
     public void memoryClear() {
         engine.memoryClear();
         display.setMemoryIndicator(false);
+    }
+
+    @Override
+    public void deleteHistory(CalculationRecord record) {
+        engine.removeHistory(record);
+        history.refresh(engine.getHistory());
     }
 
     @Override

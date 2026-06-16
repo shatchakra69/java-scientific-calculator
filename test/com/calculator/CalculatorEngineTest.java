@@ -1,5 +1,6 @@
 package com.calculator;
 
+import com.calculator.core.CalculationRecord;
 import com.calculator.core.CalculatorEngine;
 import com.calculator.exceptions.DivisionByZeroException;
 import com.calculator.exceptions.InvalidInputException;
@@ -31,6 +32,7 @@ public final class CalculatorEngineTest {
         hyperbolicAndExtras();
         logarithmsAndExponential();
         memory();
+        historyManagement();
         formatting();
         errorHandling();
 
@@ -146,6 +148,20 @@ public final class CalculatorEngineTest {
         e.memoryClear();
         check("memory cleared", !e.isMemorySet());
         approx("MR after MC", e.memoryRecall(), 0);
+    }
+
+    private static void historyManagement() {
+        CalculatorEngine e = new CalculatorEngine();
+        e.evaluate("1+1");
+        e.evaluate("2+2");
+        e.evaluate("3+3");
+        check("history records all evaluations", e.getHistory().size() == 3);
+        CalculationRecord middle = e.getHistory().get(1); // "2+2"
+        e.removeHistory(middle);
+        check("removeHistory deletes one entry", e.getHistory().size() == 2);
+        check("removeHistory removes the right entry", !e.getHistory().contains(middle));
+        e.clearHistory();
+        check("clearHistory empties history", e.getHistory().isEmpty());
     }
 
     private static void formatting() {

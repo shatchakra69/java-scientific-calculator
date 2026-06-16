@@ -1,5 +1,7 @@
 package com.calculator.gui;
 
+import com.calculator.core.CalculationRecord;
+
 /**
  * The set of user actions the calculator can perform.
  *
@@ -36,6 +38,9 @@ public interface CalculatorActions {
     void memoryClear();     // MC
     void memoryAdd();       // M+
     void memorySubtract();  // M-
+
+    /** Remove a single entry from the calculation history. */
+    void deleteHistory(CalculationRecord record);
 
     /** Clear the calculation history. */
     void clearHistory();
