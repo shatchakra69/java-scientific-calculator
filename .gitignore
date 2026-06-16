@@ -1,0 +1,15 @@
+# Compiled output
+out/
+*.class
+sources.txt
+
+# macOS
+.DS_Store
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+*.classpath
+*.project
+.settings/
